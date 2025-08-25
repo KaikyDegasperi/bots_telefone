@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  phone-sync:
+    build: .
+    container_name: phone-sync
+    env_file:
+      - .env
+    restart: unless-stopped
+    # Se seus bancos estiverem na rede do host ou outra rede Docker, ajuste:
+    network_mode: bridge

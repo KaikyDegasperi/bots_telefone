@@ -1,0 +1,90 @@
+# -----------------------------
+# Python básico
+# -----------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+env.bak/
+.venv*/
+pip-wheel-metadata/
+pip-log.txt
+
+# Build / distribuição
+build/
+dist/
+wheels/
+*.egg-info/
+.eggs/
+*.egg
+
+# Testes / cobertura
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+coverage.xml
+htmlcov/
+pytestdebug.log
+.tox/
+.nox/
+
+# Tipagem / linters
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+ruff_cache/
+.pylint.d/
+
+# Configs de IDE/Editor
+.vscode/
+.idea/
+*.code-workspace
+.vs/
+
+# Arquivos de SO
+.DS_Store
+Thumbs.db
+Icon?
+.Spotlight-V100
+.Trashes
+
+# Logs e arquivos de execução
+logs/
+*.log
+*.pid
+
+# Bancos locais e artefatos
+*.sqlite3
+*.db
+
+# Segredos e variáveis de ambiente
+.env
+.env.*
+!.env.example
+.envrc
+*.key
+*.pem
+*.crt
+*.pfx
+
+# Docker (artefatos gerados)
+docker-data/
+*.tar
+tmp/
+
+# Jupyter (se aparecer)
+.ipynb_checkpoints/
+
+# Caches e temporários genéricos
+__pypackages__/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
