@@ -7,24 +7,27 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ---------------------------
-# LOG CONFIG
-# ---------------------------
+# =====================================================
+# LOG CONFIG CORRIGIDO — agora SEM ERROS NO DOCKER
+# =====================================================
+
+LOG_DIR = "/app/logs"
+os.makedirs(LOG_DIR, exist_ok=True)  # garante que não vira diretório errado
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler("sync_telefones.log"),
+        logging.FileHandler(f"{LOG_DIR}/sync_telefones.log"),
         logging.StreamHandler()
     ]
 )
 
 log = logging.getLogger("PhoneSyncLoop")
 
-# ---------------------------
+# =====================================================
 # CONFIGURAÇÕES DO BANCO
-# ---------------------------
+# =====================================================
 
 DB_MAIN = {
     "host": os.getenv("DB_HOST"),
@@ -42,12 +45,12 @@ DB_VENDAS = {
     "database": os.getenv("DB_VENDAS_DATABASE"),
 }
 
-BATCH_SIZE = int(os.getenv("BATCH_SIZE", "300"))  # quantos CPFs buscar por ciclo
-SLEEP_SECONDS = int(os.getenv("SLEEP_SECONDS", "30"))  # descanso entre ciclos
+BATCH_SIZE = int(os.getenv("BATCH_SIZE", "1000"))
+SLEEP_SECONDS = int(os.getenv("SLEEP_SECONDS", "180"))
 
-# ---------------------------
+# =====================================================
 # QUERIES
-# ---------------------------
+# =====================================================
 
 FETCH_CPFS = f"""
     SELECT cpf_cliente
@@ -74,9 +77,9 @@ UPDATE_PHONE = """
     WHERE cpf_cliente = %s
 """
 
-# ---------------------------
+# =====================================================
 # FUNÇÕES
-# ---------------------------
+# =====================================================
 
 def connect(cfg):
     return pymysql.connect(
@@ -89,6 +92,7 @@ def connect(cfg):
         autocommit=True
     )
 
+
 def fetch_cpfs_null():
     try:
         conn = connect(DB_MAIN)
@@ -99,6 +103,7 @@ def fetch_cpfs_null():
     except Exception as e:
         log.error(f"Erro ao buscar CPFs: {e}")
         return []
+
 
 def buscar_telefone_vendas(cpf):
     try:
@@ -111,6 +116,7 @@ def buscar_telefone_vendas(cpf):
         log.error(f"Erro ao consultar telefone para {cpf}: {e}")
         return None
 
+
 def atualizar_telefone_main(cpf, telefone):
     try:
         conn = connect(DB_MAIN)
@@ -121,16 +127,17 @@ def atualizar_telefone_main(cpf, telefone):
     except Exception as e:
         log.error(f"Erro ao atualizar telefone do CPF {cpf}: {e}")
 
-# ---------------------------
+
+# =====================================================
 # LOOP PRINCIPAL
-# ---------------------------
+# =====================================================
 
 def main_loop():
     log.info("=== Iniciando sincronização contínua de telefones ===")
-    
+
     while True:
         cpfs = fetch_cpfs_null()
-        
+
         if not cpfs:
             log.info("Nenhum CPF pendente. Aguardando...")
             time.sleep(SLEEP_SECONDS)
@@ -150,8 +157,9 @@ def main_loop():
             telefone = tel_row["telefone"]
             atualizar_telefone_main(cpf, telefone)
 
-        log.info(f"Ciclo finalizado. Pausando por {SLEEP_SECONDS} segundos.\n")
+        log.info(f"Ciclo finalizado. Pausando por {SLEEP_SECONDS} segundos.")
         time.sleep(SLEEP_SECONDS)
+
 
 if __name__ == "__main__":
     main_loop()
