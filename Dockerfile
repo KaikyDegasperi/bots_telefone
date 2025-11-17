@@ -1,22 +1,22 @@
 FROM python:3.12-slim
 
-# Evita .pyc e força stdout sem buffer
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Sistema
+# Instalar dependências do sistema
 RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar deps
+# Instalar libs Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Código
+# Copiar código
 COPY src ./src
-COPY .env .env
 
-# Comando padrão: loop contínuo (pode sobrescrever no compose)
-CMD ["python", "-m", "src.cli", "loop"]
+# Copiar .env
+COPY .env .
+
+CMD ["python3", "-u", "src/main.py"]
