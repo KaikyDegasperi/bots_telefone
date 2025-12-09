@@ -149,12 +149,7 @@ def main_loop():
             cpf = row["cpf_cliente"]
 
             tel_row = buscar_telefone_vendas(cpf)
-
-            if not tel_row or not tel_row.get("telefone"):
-                log.info(f"[SEM TELEFONE] {cpf}")
-                continue
-
-            telefone = tel_row["telefone"]
+            telefone = tel_row.get("telefone", "SEM TELEFONE") if tel_row else "SEM TELEFONE"
             atualizar_telefone_main(cpf, telefone)
 
         log.info(f"Ciclo finalizado. Pausando por {SLEEP_SECONDS} segundos.")
